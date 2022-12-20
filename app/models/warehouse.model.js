@@ -1,11 +1,10 @@
 module.exports = mongoose => {
   var schema = mongoose.Schema(
     {
-      image: String,
-      productName: String,
-      productColor: String,
-      warrantyPeriod: Number,
-      sellPrice: Number
+      warehouseName: String,
+      address: String,
+      contactName: String,
+      contactPhone: Number
     },
     { timestamps: true }
   );
@@ -16,6 +15,6 @@ module.exports = mongoose => {
     return object;
   });
 
-  const Product = mongoose.model("product", schema);
-  return Product;
+  const Warehouse = mongoose.model("warehouse", schema);
+  return Warehouse;
 };

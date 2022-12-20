@@ -2,7 +2,6 @@ const db = require("../models");
 const { formatResponse } = require("../utils/formatResponse");
 const Product = db.products;
 
-// Create and Save a new Tutorial
 exports.create = async (req, res) => {
   // Validate request
   // if (!req.body.title) {
@@ -39,7 +38,7 @@ exports.findAll = async (req, res) => {
     console.log({ err })
     res.status(500).send({
       message:
-        err.message || "Some error occurred while creating the product."
+        err.message || "Some error occurred while find the product."
     });
   }
 };
@@ -59,7 +58,7 @@ exports.findOne = async (req, res) => {
     console.log({ err })
     res.status(500).send({
       message:
-        err.message || "Some error occurred while creating the product."
+        err.message || "Some error occurred while find the product."
     });
   }
 };
