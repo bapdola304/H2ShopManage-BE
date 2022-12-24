@@ -8,5 +8,6 @@ db.mongoose = mongoose;
 db.url = dbConfig.url;
 db.products = require("./product.model.js")(mongoose);
 db.warehouses = require("./warehouse.model")(mongoose);
+db.mywarehouse = require("./myWarehouse.model")(mongoose);
 
 module.exports = db;

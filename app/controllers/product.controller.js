@@ -3,19 +3,11 @@ const { formatResponse } = require("../utils/formatResponse");
 const Product = db.products;
 
 exports.create = async (req, res) => {
-  // Validate request
-  // if (!req.body.title) {
-  //   res.status(400).send({ message: "Content can not be empty!" });
-  //   return;
-  // }
   try {
-    const { body: { image, productName, productColor, warrantyPeriod, sellPrice } = {} } = req;
+    const { body: { productName, warrantyPeriod } = {} } = req;
     const product = new Product({
-      image,
       productName,
-      productColor,
-      warrantyPeriod,
-      sellPrice
+      warrantyPeriod
     });
     const data = await product.save(product)
     res.status(200).send(data)

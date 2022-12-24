@@ -1,11 +1,8 @@
 module.exports = mongoose => {
   var schema = mongoose.Schema(
     {
-      image: String,
       productName: String,
-      productColor: String,
-      warrantyPeriod: Number,
-      sellPrice: Number
+      warrantyPeriod: Number
     },
     { timestamps: true }
   );
