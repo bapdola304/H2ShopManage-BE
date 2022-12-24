@@ -28,8 +28,15 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
+  console.log({req})
+  const { query: { productTypeId } = {} } = req;
   try {
-    const myWarehouses = await MyWarehouse.find().populate('productId').populate('warehouseId').exec()
+    var myWarehouses = []
+    if (productTypeId) {
+      myWarehouses = await MyWarehouse.find({ productId: productTypeId }).populate('productId').populate('warehouseId').exec()
+    } else {
+      myWarehouses = await MyWarehouse.find().populate('productId').populate('warehouseId').exec()
+    }
     const response = formatResponse(myWarehouses)
     res.status(200).send(response)
   } catch (err) {
