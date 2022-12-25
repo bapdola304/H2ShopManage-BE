@@ -39,10 +39,11 @@ exports.findAll = async (req, res) => {
     } else {
       myWarehouses = await MyWarehouse.find().populate('productId').populate('warehouseId').exec()
     }
+    const productSoldList = await ProductSold.find();
     if (!isSelecteInput) {
       for (let index = 0; index < myWarehouses.length; index++) {
         const element = myWarehouses[index];
-        element.remainingQuantity = await getRemainingQuantity(element?._id, element?.quantity);
+        element.remainingQuantity = getRemainingQuantity(element?._id, element?.quantity, productSoldList);
         newMyWarehouses.push(element);
       }
     } else {
@@ -59,8 +60,8 @@ exports.findAll = async (req, res) => {
   }
 };
 
-const getRemainingQuantity = async (id, totalQuantity) => {
-  const arrayById = await ProductSold.find({ productWarehouseId: id }) || [];
+const getRemainingQuantity = async (id, totalQuantity, productSoldList) => {
+  const arrayById = productSoldList.filter(item => item?.productWarehouseId == id) || [];
   const productSoldQUantity = arrayById.map(item => item.quantity).reduce((a, b) => a + b, 0);
   return (totalQuantity - productSoldQUantity);
 }
