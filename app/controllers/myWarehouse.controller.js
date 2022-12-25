@@ -1,6 +1,7 @@
 const db = require("../models");
 const { formatResponse } = require("../utils/formatResponse");
 const MyWarehouse = db.mywarehouse;
+const ProductSold = db.productSold;
 
 exports.create = async (req, res) => {
   try {
@@ -14,6 +15,7 @@ exports.create = async (req, res) => {
       inputDate,
       price,
       quantity,
+      remainingQuantity: quantity,
       total: (quantity*price)
     });
     const data = await myWarehouse.save(myWarehouse)
@@ -28,7 +30,6 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  console.log({req})
   const { query: { productTypeId } = {} } = req;
   try {
     var myWarehouses = []
@@ -37,7 +38,13 @@ exports.findAll = async (req, res) => {
     } else {
       myWarehouses = await MyWarehouse.find().populate('productId').populate('warehouseId').exec()
     }
-    const response = formatResponse(myWarehouses)
+    const newMyWarehouses = []
+    for (let index = 0; index < myWarehouses.length; index++) {
+      const element = myWarehouses[index];
+      element.remainingQuantity = await getRemainingQuantity(element?._id, element?.quantity);
+      newMyWarehouses.push(element)
+    }
+    const response = formatResponse(newMyWarehouses)
     res.status(200).send(response)
   } catch (err) {
     console.log({ err })
@@ -47,6 +54,12 @@ exports.findAll = async (req, res) => {
     });
   }
 };
+
+const getRemainingQuantity = async (id, totalQuantity) => {
+  const arrayById = await ProductSold.find({ productWarehouseId: id }) || [];
+  const productSoldQUantity =  arrayById.map(item => item.quantity).reduce((a, b) => a + b, 0);
+  return (totalQuantity - productSoldQUantity);
+}
 
 exports.findOne = async (req, res) => {
   const { params: { id } = {} } = req;

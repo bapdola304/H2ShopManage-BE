@@ -13,6 +13,7 @@ module.exports = mongoose => {
       inputDate: Date,
       price: Number,
       quantity: Number,
+      remainingQuantity: Number,
       total: Number
     },
     { timestamps: true }
