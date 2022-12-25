@@ -34,22 +34,18 @@ exports.findAll = async (req, res) => {
   try {
     var myWarehouses = [];
     var newMyWarehouses = [];
-    if (productTypeId) {
-      myWarehouses = await MyWarehouse.find({ productId: productTypeId }).populate('productId').populate('warehouseId').exec()
-    } else {
-      myWarehouses = await MyWarehouse.find().populate('productId').populate('warehouseId').exec()
-    }
+    const condition = productTypeId ? { productId: productTypeId } : {};
+    myWarehouses = await MyWarehouse.find(condition).populate('productId').populate('warehouseId').exec()
     const productSoldList = await ProductSold.find();
-    if (!isSelecteInput) {
-      for (let index = 0; index < myWarehouses.length; index++) {
-        const element = myWarehouses[index];
-        element.remainingQuantity = getRemainingQuantity(element?._id, element?.quantity, productSoldList);
-        newMyWarehouses.push(element);
-      }
-    } else {
-      newMyWarehouses = myWarehouses;
+    for (let index = 0; index < myWarehouses.length; index++) {
+      const element = myWarehouses[index];
+      element.remainingQuantity = getRemainingQuantity(element?._id, element?.quantity, productSoldList);
+      newMyWarehouses.push(element);
     }
-    const response = formatResponse(newMyWarehouses)
+    if (isSelecteInput) {
+      newMyWarehouses = newMyWarehouses.filter(item => item?.remainingQuantity > 0);
+    }
+    const response = formatResponse(newMyWarehouses);
     res.status(200).send(response)
   } catch (err) {
     console.log({ err })
