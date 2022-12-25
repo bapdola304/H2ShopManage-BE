@@ -60,8 +60,8 @@ exports.findAll = async (req, res) => {
   }
 };
 
-const getRemainingQuantity = async (id, totalQuantity, productSoldList) => {
-  const arrayById = productSoldList.filter(item => item?.productWarehouseId == id) || [];
+const getRemainingQuantity = (id, totalQuantity, productSoldList) => {
+  const arrayById = productSoldList.filter(item => item.productWarehouseId.toString() === id.toString());
   const productSoldQUantity = arrayById.map(item => item.quantity).reduce((a, b) => a + b, 0);
   return (totalQuantity - productSoldQUantity);
 }
