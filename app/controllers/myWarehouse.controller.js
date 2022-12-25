@@ -16,7 +16,7 @@ exports.create = async (req, res) => {
       price,
       quantity,
       remainingQuantity: quantity,
-      total: (quantity*price)
+      total: (quantity * price)
     });
     const data = await myWarehouse.save(myWarehouse)
     res.status(200).send(data)
@@ -30,19 +30,23 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const { query: { productTypeId } = {} } = req;
+  const { query: { productTypeId, isSelecteInput } = {} } = req;
   try {
-    var myWarehouses = []
+    var myWarehouses = [];
+    var newMyWarehouses = [];
     if (productTypeId) {
       myWarehouses = await MyWarehouse.find({ productId: productTypeId }).populate('productId').populate('warehouseId').exec()
     } else {
       myWarehouses = await MyWarehouse.find().populate('productId').populate('warehouseId').exec()
     }
-    const newMyWarehouses = []
-    for (let index = 0; index < myWarehouses.length; index++) {
-      const element = myWarehouses[index];
-      element.remainingQuantity = await getRemainingQuantity(element?._id, element?.quantity);
-      newMyWarehouses.push(element)
+    if (!isSelecteInput) {
+      for (let index = 0; index < myWarehouses.length; index++) {
+        const element = myWarehouses[index];
+        element.remainingQuantity = await getRemainingQuantity(element?._id, element?.quantity);
+        newMyWarehouses.push(element);
+      }
+    } else {
+      newMyWarehouses = myWarehouses;
     }
     const response = formatResponse(newMyWarehouses)
     res.status(200).send(response)
@@ -57,7 +61,7 @@ exports.findAll = async (req, res) => {
 
 const getRemainingQuantity = async (id, totalQuantity) => {
   const arrayById = await ProductSold.find({ productWarehouseId: id }) || [];
-  const productSoldQUantity =  arrayById.map(item => item.quantity).reduce((a, b) => a + b, 0);
+  const productSoldQUantity = arrayById.map(item => item.quantity).reduce((a, b) => a + b, 0);
   return (totalQuantity - productSoldQUantity);
 }
 
@@ -90,7 +94,7 @@ exports.update = async (req, res) => {
   try {
     const myWarehouse = await MyWarehouse.findByIdAndUpdate(id, req.body, { useFindAndModify: true })
     if (!myWarehouse) {
-      res.status(404).send({ message: `Cannot update warehouse with id=${id}. Maybe warehouse was not found! `});
+      res.status(404).send({ message: `Cannot update warehouse with id=${id}. Maybe warehouse was not found! ` });
     } else {
       const response = formatResponse(myWarehouse)
       res.status(200).send(response)
@@ -110,7 +114,7 @@ exports.delete = async (req, res) => {
   try {
     const myWarehouse = await MyWarehouse.findByIdAndRemove(id, { useFindAndModify: false })
     if (!myWarehouse) {
-      res.status(404).send({ message: `Cannot delete warehouse with id=${id}. Maybe warehouse was not found! `});
+      res.status(404).send({ message: `Cannot delete warehouse with id=${id}. Maybe warehouse was not found! ` });
     } else {
       const response = formatResponse(myWarehouse)
       res.status(200).send(response)
