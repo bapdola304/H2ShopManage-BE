@@ -1,17 +1,17 @@
 module.exports = app => {
-    const costsIncurredController = require("../controllers/costType.controller");
+    const costsIncurredController = require("../controllers/costsIncurred.controller");
 
     var router = require("express").Router();
 
-    router.post("/", costTypeController.create);
+    router.post("/", costsIncurredController.create);
 
-    router.get("/", costTypeController.findAll);
+    router.get("/", costsIncurredController.findAll);
 
-    router.get("/:id", costTypeController.findOne);
+    router.get("/:id", costsIncurredController.findOne);
 
-    router.put("/:id", costTypeController.update);
+    router.put("/:id", costsIncurredController.update);
 
-    router.delete("/:id", costTypeController.delete);
+    router.delete("/:id", costsIncurredController.delete);
 
-    app.use("/api/costType", router);
+    app.use("/api/costsIncurred", router);
   };
