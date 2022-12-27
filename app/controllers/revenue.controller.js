@@ -2,6 +2,7 @@ const db = require("../models");
 const { formatResponse } = require("../utils/formatResponse");
 const CostsIncurred = db.costsIncurred;
 const MyWarehouse = db.mywarehouse;
+const ProductSold = db.productSold;
 
 // exports.create = async (req, res) => {
 //   try {
@@ -28,11 +29,15 @@ exports.findAll = async (req, res) => {
   try {
 
     const myWarehousData = await MyWarehouse.find({}, 'price');
-    const productSoldData = await MyWarehouse.find({}, 'sellPrice');
-    const totalAmountImportedProducts = getTotalAmountImportedProducts(myWarehousData);
-    const totalAmountImportedProductsSold = getTotalAmountImportedProducts(productSoldData);
-    // const response = formatResponse(costsIncurred)
-    // res.status(200).send(response)
+    const productSoldData = await ProductSold.find({}, 'sellPrice');
+    const costsIncurredData = await CostsIncurred.find({}, 'price')
+    const totalProfitData = await ProductSold.find({}, 'productWarehouseId sellPrice').populate('productWarehouseId').exec();
+    const totalAmountImportedProducts = getTotalAmount(myWarehousData, 'price');
+    const totalAmountImportedProductsSold = getTotalAmount(productSoldData, 'sellPrice');
+    const totalAmountCostIncurred = getTotalAmount(costsIncurredData);
+    const totalProfit = getTotalProfit(totalProfitData);
+    const response = formatResponse({totalAmountImportedProducts, totalAmountImportedProductsSold, totalAmountCostIncurred, totalProfit});
+    res.status(200).send(response)
   } catch (err) {
     console.log({ err })
     res.status(500).send({
@@ -42,8 +47,13 @@ exports.findAll = async (req, res) => {
   }
 };
 
-const getTotalAmountImportedProducts = (data) => {
-  const total = data.map(item => item.price).reduce((a, b) => a + b, 0);
+const getTotalAmount = (data, field) => {
+  const total = data.map(item => item[field]).reduce((a, b) => a + b, 0);
+  return total;
+}
+
+const getTotalProfit = (data) => {
+  const total = data.map(item => (item.sellPrice - item?.productWarehouseId?.price )).reduce((a, b) => a + b, 0);
   return total;
 }
 
