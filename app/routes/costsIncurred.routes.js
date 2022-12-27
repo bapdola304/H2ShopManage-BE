@@ -13,5 +13,5 @@ module.exports = app => {
 
     router.delete("/:id", costsIncurredController.delete);
 
-    app.use("/api/costsIncurred", router);
+    app.use("/api/costIncurred", router);
   };

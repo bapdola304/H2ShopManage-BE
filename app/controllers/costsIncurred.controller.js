@@ -4,9 +4,9 @@ const CostsIncurred = db.costsIncurred;
 
 exports.create = async (req, res) => {
   try {
-    const { body: { costName, inputDate, price, quantity, total } = {} } = req;
+    const { body: { costIncurredName, inputDate, price, quantity, total } = {} } = req;
     const costsIncurred = new CostsIncurred({
-      costName,
+      costIncurredName,
       inputDate,
       price,
       quantity,

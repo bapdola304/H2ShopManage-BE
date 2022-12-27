@@ -1,7 +1,7 @@
 module.exports = mongoose => {
   var schema = mongoose.Schema(
     {
-      costName: String,
+      costIncurredName: String,
       inputDate: Date,
       price: Number,
       quantity: Number,
