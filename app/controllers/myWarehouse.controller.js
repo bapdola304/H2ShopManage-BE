@@ -12,7 +12,7 @@ exports.create = async (req, res) => {
       warehouseProductName,
       color,
       sellPrice,
-      inputDate,
+      inputDate: new Date(`${inputDate}T00:00:00Z`),
       price,
       quantity,
       remainingQuantity: quantity,
@@ -30,12 +30,21 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const { query: { productTypeId, isSelecteInput } = {} } = req;
+  const { query: { productTypeId, isSelecteInput, warehouseId, inputDate } = {} } = req;
   try {
     var myWarehouses = [];
     var newMyWarehouses = [];
-    const condition = productTypeId ? { productId: productTypeId } : {};
-    myWarehouses = await MyWarehouse.find(condition).populate('productId').populate('warehouseId').exec()
+    var condition = {};
+    if (productTypeId) {
+      condition.productId = productTypeId
+    }
+    if (warehouseId) {
+      condition.warehouseId = warehouseId
+    }
+    if (inputDate) {
+      condition.inputDate = { $gte: new Date(`${inputDate}T00:00:00Z`), $lte: new Date(`${inputDate}T23:59:00Z`) }
+    }
+    myWarehouses = await MyWarehouse.find(condition).populate('productId').populate('warehouseId').exec();
     const productSoldList = await ProductSold.find();
     for (let index = 0; index < myWarehouses.length; index++) {
       const element = myWarehouses[index];
