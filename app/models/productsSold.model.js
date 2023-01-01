@@ -2,7 +2,7 @@ module.exports = mongoose => {
   var schema = mongoose.Schema(
     {
       productWarehouseId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'mywarehouse'
+        type: mongoose.Schema.Types.ObjectId, ref: 'productInWarehouse'
       },
       customer: String,
       customerPhone: String,
@@ -21,6 +21,6 @@ module.exports = mongoose => {
     return object;
   });
 
-  const productSold = mongoose.model("productSold", schema);
-  return productSold;
+  const productSolds = mongoose.model("productsSold", schema);
+  return productSolds;
 };

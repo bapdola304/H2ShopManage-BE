@@ -1,18 +1,20 @@
 const db = require("../models");
 const { formatResponse } = require("../utils/formatResponse");
 const ProductSold = db.productSold;
+const ProductsSold = db.productsSold;
 
 exports.create = async (req, res) => {
   try {
-    const { body: { productWarehouseId, customer, customerPhone, sellPrice, inputDate, quantity, total } = {} } = req;
-    const productSold = new ProductSold({
+    const { body: { productWarehouseId, customer, customerPhone, sellPrice, inputDate, quantity, total, colorId } = {} } = req;
+    const productSold = new ProductsSold({
       productWarehouseId,
       customer,
       customerPhone,
       sellPrice,
       inputDate,
       quantity,
-      total
+      total,
+      colorId
     });
     const data = await productSold.save(productSold)
     res.status(200).send(data)
@@ -27,7 +29,7 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   try {
-    const productSold = await ProductSold.find().populate('productWarehouseId').exec()
+    const productSold = await ProductsSold.find().populate('productWarehouseId').exec();
     const response = formatResponse(productSold)
     res.status(200).send(response)
   } catch (err) {
@@ -42,7 +44,7 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   const { params: { id } = {} } = req;
   try {
-    const productSold = await ProductSold.findById(id).populate('productWarehouseId').exec()
+    const productSold = await ProductsSold.findById(id).populate('productWarehouseId').exec()
     if (!productSold) {
       res.status(404).send({ message: "Not found warehouse with id " + id });
     } else {
@@ -66,7 +68,7 @@ exports.update = async (req, res) => {
   }
   const { params: { id } = {} } = req;
   try {
-    const productSold = await ProductSold.findByIdAndUpdate(id, req.body, { useFindAndModify: true })
+    const productSold = await ProductsSold.findByIdAndUpdate(id, req.body, { useFindAndModify: true })
     if (!productSold) {
       res.status(404).send({ message: `Cannot update warehouse with id=${id}. Maybe warehouse was not found! `});
     } else {
