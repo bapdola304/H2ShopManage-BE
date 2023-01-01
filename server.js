@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to bezkoder application." });
 });
 
-require("./app/routes/product.routes")(app);
+require("./app/routes/productType.routes")(app);
 require("./app/routes/warehouse.routes")(app);
 require("./app/routes/myWarehouse.routes")(app);
 require("./app/routes/productSold.routes")(app);

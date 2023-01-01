@@ -1,11 +1,11 @@
 const db = require("../models");
 const { formatResponse } = require("../utils/formatResponse");
-const Product = db.products;
+const ProductType = db.productType;
 
 exports.create = async (req, res) => {
   try {
     const { body: { productName, warrantyPeriod } = {} } = req;
-    const product = new Product({
+    const product = new ProductType({
       productName,
       warrantyPeriod
     });
@@ -23,7 +23,7 @@ exports.create = async (req, res) => {
 // Retrieve all Tutorials from the database.
 exports.findAll = async (req, res) => {
   try {
-    const produdcts = await Product.find()
+    const produdcts = await ProductType.find()
     const response = formatResponse(produdcts)
     res.status(200).send(response)
   } catch (err) {
@@ -39,9 +39,9 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   const { params: { id } = {} } = req;
   try {
-    const produdct = await Product.findById(id)
+    const produdct = await ProductType.findById(id)
     if (!produdct) {
-      res.status(404).send({ message: "Not found Product with id " + id });
+      res.status(404).send({ message: "Not found ProductType with id " + id });
     } else {
       const response = formatResponse(produdct)
       res.status(200).send(response)
@@ -64,9 +64,9 @@ exports.update = async (req, res) => {
   }
   const { params: { id } = {} } = req;
   try {
-    const produdct = await Product.findByIdAndUpdate(id, req.body, { useFindAndModify: true })
+    const produdct = await ProductType.findByIdAndUpdate(id, req.body, { useFindAndModify: true })
     if (!produdct) {
-      res.status(404).send({ message: `Cannot update Product with id=${id}. Maybe Product was not found! `});
+      res.status(404).send({ message: `Cannot update ProductType with id=${id}. Maybe ProductType was not found! `});
     } else {
       const response = formatResponse(produdct)
       res.status(200).send(response)
@@ -85,9 +85,9 @@ exports.delete = async (req, res) => {
   const { params: { id } = {} } = req;
 
   try {
-    const produdct = await Product.findByIdAndRemove(id, { useFindAndModify: false })
+    const produdct = await ProductType.findByIdAndRemove(id, { useFindAndModify: false })
     if (!produdct) {
-      res.status(404).send({ message: `Cannot delete Product with id=${id}. Maybe Product was not found! `});
+      res.status(404).send({ message: `Cannot delete ProductType with id=${id}. Maybe ProductType was not found! `});
     } else {
       const response = formatResponse(produdct)
       res.status(200).send(response)
