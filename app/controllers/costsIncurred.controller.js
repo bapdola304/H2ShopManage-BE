@@ -4,13 +4,14 @@ const CostsIncurred = db.costsIncurred;
 
 exports.create = async (req, res) => {
   try {
-    const { body: { costIncurredName, inputDate, price, quantity, total } = {} } = req;
+    const { body: { costIncurredName, inputDate, price, quantity, total, costTypeId } = {} } = req;
     const costsIncurred = new CostsIncurred({
       costIncurredName,
       inputDate,
       price,
       quantity,
-      total
+      total,
+      costType: costTypeId
     });
     const data = await costsIncurred.save(costsIncurred)
     res.status(200).send(data)
@@ -26,9 +27,9 @@ exports.create = async (req, res) => {
 // Retrieve all Tutorials from the database.
 exports.findAll = async (req, res) => {
   try {
-    const costsIncurred = await CostsIncurred.find()
-    const response = formatResponse(costsIncurred)
-    res.status(200).send(response)
+    const costsIncurred = await CostsIncurred.find().populate('costType').exec();
+    const response = formatResponse(costsIncurred);
+    res.status(200).send(response);
   } catch (err) {
     console.log({ err })
     res.status(500).send({
@@ -65,9 +66,14 @@ exports.update = async (req, res) => {
       message: "Data to update can not be empty!"
     });
   }
-  const { params: { id } = {} } = req;
+  const { params: { id } = {}, body = {} } = req;
+  const { costTypeId } = body;
+  const bodyData = {
+    ...body,
+    costType: costTypeId
+  }
   try {
-    const costsIncurred = await CostsIncurred.findByIdAndUpdate(id, req.body, { useFindAndModify: true })
+    const costsIncurred = await CostsIncurred.findByIdAndUpdate(id, bodyData, { useFindAndModify: true })
     if (!costsIncurred) {
       res.status(404).send({ message: `Cannot update costsIncurred with id=${id}. Maybe costsIncurred was not found! `});
     } else {

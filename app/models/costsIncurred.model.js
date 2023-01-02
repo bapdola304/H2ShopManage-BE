@@ -5,7 +5,10 @@ module.exports = mongoose => {
       inputDate: Date,
       price: Number,
       quantity: Number,
-      total: Number
+      total: Number,
+      costType: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'costType'
+      }
     },
     { timestamps: true }
   );
