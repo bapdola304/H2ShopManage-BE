@@ -6,15 +6,19 @@ const ProductSold = db.productsSold;
 
 exports.findAll = async (req, res) => {
   try {
+    const shippingId = '63b1834bcb682ebaec14047d';
     const productInWarehouseData = await ProductInWarehouse.find({}, 'total');
     const productSoldData = await ProductSold.find({}, 'total');
-    const costsIncurredData = await CostsIncurred.find({}, 'total')
+    const costsIncurredData = await CostsIncurred.find({}, 'total costType')
     const totalProfitData = await ProductSold.find({}, 'productWarehouseId sellPrice quantity').populate('productWarehouseId').exec();
     const totalAmountImportedProducts = getTotalAmount(productInWarehouseData, 'total');
     const totalAmountImportedProductsSold = getTotalAmount(productSoldData, 'total');
-    const totalAmountCostIncurred = getTotalAmount(costsIncurredData, 'total');
+    const shippingFees = costsIncurredData.filter(item => item.costType === shippingId);
+    const otherFees = costsIncurredData.filter(item => item.costType !== shippingId);
+    const totalShippingFees = getTotalAmount(shippingFees, 'total');
+    const totalOtherFees = getTotalAmount(otherFees, 'total');
     const totalProfit = getTotalProfit(totalProfitData);
-    const response = formatResponse({totalAmountImportedProducts, totalAmountImportedProductsSold, totalAmountCostIncurred, totalProfit});
+    const response = formatResponse({totalAmountImportedProducts, totalAmountImportedProductsSold, totalShippingFees, totalOtherFees, totalProfit});
     res.status(200).send(response)
   } catch (err) {
     console.log({ err })
