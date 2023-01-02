@@ -38,6 +38,8 @@ require("./app/routes/productSold.routes")(app);
 require("./app/routes/costType.routes")(app);
 require("./app/routes/costsIncurred.routes")(app);
 require("./app/routes/revenue.routes")(app);
+require("./app/routes/product.routes")(app);
+
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

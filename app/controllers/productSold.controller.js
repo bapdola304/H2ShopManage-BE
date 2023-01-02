@@ -1,6 +1,5 @@
 const db = require("../models");
 const { formatResponse } = require("../utils/formatResponse");
-const ProductSold = db.productSold;
 const ProductsSold = db.productsSold;
 
 exports.create = async (req, res) => {
@@ -29,7 +28,12 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   try {
-    const productSold = await ProductsSold.find().populate('productWarehouseId').exec();
+    const productSold = await ProductsSold.find().populate(
+      {
+        path: 'productWarehouseId',
+        populate: { path: 'product' }
+      }
+    ).exec();
     const response = formatResponse(productSold)
     res.status(200).send(response)
   } catch (err) {
@@ -44,7 +48,12 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   const { params: { id } = {} } = req;
   try {
-    const productSold = await ProductsSold.findById(id).populate('productWarehouseId').exec()
+    const productSold = await ProductsSold.findById(id).populate(
+      {
+        path: 'productWarehouseId',
+        populate: { path: 'product' }
+      }
+    ).exec()
     if (!productSold) {
       res.status(404).send({ message: "Not found warehouse with id " + id });
     } else {
@@ -88,7 +97,7 @@ exports.delete = async (req, res) => {
   const { params: { id } = {} } = req;
 
   try {
-    const productSold = await ProductSold.findByIdAndRemove(id, { useFindAndModify: false })
+    const productSold = await ProductsSold.findByIdAndRemove(id, { useFindAndModify: false })
     if (!productSold) {
       res.status(404).send({ message: `Cannot delete warehouse with id=${id}. Maybe warehouse was not found! `});
     } else {

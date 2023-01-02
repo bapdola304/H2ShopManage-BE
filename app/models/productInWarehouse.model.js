@@ -8,13 +8,15 @@ module.exports = mongoose => {
 
   var schema = mongoose.Schema(
     {
-      warehouseId: {
+      warehouse: {
         type: mongoose.Schema.Types.ObjectId, ref: 'warehouse'
       },
-      productId: {
+      productType: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'productType'
+      },
+      product: {
         type: mongoose.Schema.Types.ObjectId, ref: 'product'
       },
-      warehouseProductName: String,
       sellPrice: Number,
       inputDate: Date,
       price: Number,

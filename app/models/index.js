@@ -12,5 +12,6 @@ db.costType = require("./costType.model")(mongoose);
 db.costsIncurred = require("./costsIncurred.model")(mongoose);
 db.productInWarehouse = require("./productInWarehouse.model")(mongoose);
 db.productsSold = require("./productsSold.model")(mongoose);
+db.product = require("./product.model.js")(mongoose);
 
 module.exports = db;

@@ -32,7 +32,7 @@ const getTotalAmount = (data, field) => {
 
 const getTotalProfit = (data) => {
   const total = data.map(item => ((item.sellPrice * item?.quantity) - (item?.productWarehouseId?.price * item?.quantity))).reduce((a, b) => a + b, 0);
-  return total;
+  return total || 0;
 }
 
 
