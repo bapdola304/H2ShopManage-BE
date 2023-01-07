@@ -29,7 +29,6 @@ exports.findAll = async (req, res) => {
     const totalShippingFees = getTotalAmount(shippingFees, 'total');
     const totalOtherFees = getTotalAmount(otherFees, 'total');
     const totalProductAfterThat = getTotalAmount(productInWarehouseAfterThatData, 'total');
-    console.log({totalProductAfterThat});
     const currentMoney = (totalAmountImportedProductsSold - totalProductAfterThat)
     const totalProfit = getTotalProfit(totalProfitData);
     const response = formatResponse({totalAmountImportedProducts, totalAmountImportedProductsSold, totalShippingFees, totalOtherFees, totalProfit, currentMoney});
