@@ -53,6 +53,11 @@ exports.findOne = async (req, res) => {
         path: 'productWarehouseId',
         populate: { path: 'product' }
       }
+    ).populate(
+      {
+        path: 'productWarehouseId',
+        populate: { path: 'productType' }
+      }
     ).exec()
     if (!productSold) {
       res.status(404).send({ message: "Not found warehouse with id " + id });
