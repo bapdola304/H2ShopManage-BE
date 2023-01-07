@@ -5,12 +5,17 @@ const ProductInWarehouse = db.productInWarehouse;
 const ProductSold = db.productsSold;
 
 exports.findAll = async (req, res) => {
+  const { query: { fromDate, toDate } = {} } = req;
   try {
     const shippingId = '63b1834bcb682ebaec14047d';
+    var productSoldCondition = {};
+    if (fromDate && toDate) {
+      productSoldCondition.inputDate = { $gte: new Date(`${fromDate}T00:00:00Z`), $lte: new Date(`${toDate}T23:59:00Z`) }
+    }
     const productInWarehouseData = await ProductInWarehouse.find({}, 'total');
-    const productSoldData = await ProductSold.find({}, 'total');
+    const productSoldData = await ProductSold.find(productSoldCondition, 'total');
     const costsIncurredData = await CostsIncurred.find({}, 'total costType')
-    const totalProfitData = await ProductSold.find({}, 'productWarehouseId sellPrice quantity').populate('productWarehouseId').exec();
+    const totalProfitData = await ProductSold.find(productSoldCondition, 'productWarehouseId sellPrice quantity').populate('productWarehouseId').exec();
     const totalAmountImportedProducts = getTotalAmount(productInWarehouseData, 'total');
     const totalAmountImportedProductsSold = getTotalAmount(productSoldData, 'total');
     const shippingFees = costsIncurredData.filter(item => item.costType === shippingId);

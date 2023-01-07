@@ -10,7 +10,7 @@ exports.create = async (req, res) => {
       customer,
       customerPhone,
       sellPrice,
-      inputDate,
+      inputDate: new Date(`${inputDate}T00:00:00Z`),
       quantity,
       total,
       colorId
@@ -27,8 +27,13 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
+  const { query: { inputDate } = {} } = req;
   try {
-    const productSold = await ProductsSold.find().populate(
+    var condition = {};
+    if (inputDate) {
+      condition.inputDate = { $gte: new Date(`${inputDate}T00:00:00Z`), $lte: new Date(`${inputDate}T23:59:00Z`) }
+    }
+    const productSold = await ProductsSold.find(condition).populate(
       {
         path: 'productWarehouseId',
         populate: { path: 'product' }
@@ -80,9 +85,14 @@ exports.update = async (req, res) => {
       message: "Data to update can not be empty!"
     });
   }
-  const { params: { id } = {} } = req;
+  const { params: { id } = {}, body } = req;
+  const { inputDate } = body;
+  const bodyData = {
+    ...body,
+    inputDate: new Date(`${inputDate}T00:00:00Z`),
+  }
   try {
-    const productSold = await ProductsSold.findByIdAndUpdate(id, req.body, { useFindAndModify: true })
+    const productSold = await ProductsSold.findByIdAndUpdate(id, bodyData, { useFindAndModify: true })
     if (!productSold) {
       res.status(404).send({ message: `Cannot update warehouse with id=${id}. Maybe warehouse was not found! `});
     } else {

@@ -1,77 +1,8 @@
 const db = require("../models");
 const { formatResponse } = require("../utils/formatResponse");
-const MyWarehouse = db.mywarehouse;
-const ProductSold = db.productSold;
+
 const ProductInWarehouse = db.productInWarehouse;
 const ProductsSold = db.productsSold;
-
-// exports.create = async (req, res) => {
-//   try {
-//     const { body: { warehouseId, productId, warehouseProductName, color, sellPrice, inputDate, price, quantity, total } = {} } = req;
-//     const myWarehouse = new MyWarehouse({
-//       warehouseId,
-//       productId,
-//       warehouseProductName,
-//       color,
-//       sellPrice,
-//       inputDate: new Date(`${inputDate}T00:00:00Z`),
-//       price,
-//       quantity,
-//       remainingQuantity: quantity,
-//       total: (quantity * price)
-//     });
-//     const data = await myWarehouse.save(myWarehouse)
-//     res.status(200).send(data)
-//   } catch (err) {
-//     console.log({ err })
-//     res.status(500).send({
-//       message:
-//         err.message
-//     });
-//   }
-// };
-
-// exports.findAll = async (req, res) => {
-//   const { query: { productTypeId, isSelecteInput, warehouseId, inputDate } = {} } = req;
-//   try {
-//     var myWarehouses = [];
-//     var newMyWarehouses = [];
-//     var condition = {};
-//     if (productTypeId) {
-//       condition.productId = productTypeId
-//     }
-//     if (warehouseId) {
-//       condition.warehouseId = warehouseId
-//     }
-//     if (inputDate) {
-//       condition.inputDate = { $gte: new Date(`${inputDate}T00:00:00Z`), $lte: new Date(`${inputDate}T23:59:00Z`) }
-//     }
-//     myWarehouses = await MyWarehouse.find(condition).populate('productId').populate('warehouseId').exec();
-//     const productSoldList = await ProductSold.find();
-//     for (let index = 0; index < myWarehouses.length; index++) {
-//       const element = myWarehouses[index];
-//       element.remainingQuantity = getRemainingQuantity(element?._id, element?.quantity, productSoldList);
-//       newMyWarehouses.push(element);
-//     }
-//     if (isSelecteInput) {
-//       newMyWarehouses = newMyWarehouses.filter(item => item?.remainingQuantity > 0);
-//     }
-//     const response = formatResponse(newMyWarehouses);
-//     res.status(200).send(response)
-//   } catch (err) {
-//     console.log({ err })
-//     res.status(500).send({
-//       message:
-//         err.message
-//     });
-//   }
-// };
-
-// const getRemainingQuantity = (id, totalQuantity, productSoldList) => {
-//   const arrayById = productSoldList.filter(item => item.productWarehouseId.toString() === id.toString());
-//   const productSoldQUantity = arrayById.map(item => item.quantity).reduce((a, b) => a + b, 0);
-//   return (totalQuantity - productSoldQUantity);
-// }
 
 exports.findOne = async (req, res) => {
   const { params: { id } = {} } = req;
@@ -99,9 +30,10 @@ exports.update = async (req, res) => {
     });
   }
   const { params: { id } = {}, body = {} } = req;
-  const { warehouseId, productTypeId, productId } = body;
+  const { warehouseId, productTypeId, productId, inputDate } = body;
   const bodyData = {
     ...body,
+    inputDate: new Date(`${inputDate}T00:00:00Z`),
     warehouse: warehouseId,
     productType: productTypeId,
     product: productId,
