@@ -10,15 +10,18 @@ exports.findAll = async (req, res) => {
     const shippingId = '63b1834bcb682ebaec14047d';
     const setupStoreId = '63b27f1f2b2a3e5265776b6d';
     const initCostId = '63b93b337f562e8c8ccef6f2';
+    const importProductByMoneyId = '63ba8d24302c5550a568406b';
     var productSoldCondition = {};
-    var productCondition = {
-      inputDate: { $gte: new Date(`2022-11-20T00:00:00Z`) }
-    }
+    var productImportCondition = {};
+    // var productCondition = {
+    //   inputDate: { $gte: new Date(`2022-11-20T00:00:00Z`) }
+    // }
     if (fromDate && toDate) {
       productSoldCondition.inputDate = { $gte: new Date(`${fromDate}T00:00:00Z`), $lte: new Date(`${toDate}T23:59:00Z`) }
+      productImportCondition.inputDate = { $gte: new Date(`${fromDate}T00:00:00Z`), $lte: new Date(`${toDate}T23:59:00Z`) }
     }
-    const productInWarehouseData = await ProductInWarehouse.find({}, 'total');
-    const productInWarehouseAfterThatData = await ProductInWarehouse.find(productCondition, 'total');
+    const productInWarehouseData = await ProductInWarehouse.find(productImportCondition, 'total');
+    // const productInWarehouseAfterThatData = await ProductInWarehouse.find(productCondition, 'total');
     const productSoldData = await ProductSold.find(productSoldCondition, 'total');
     const costsIncurredData = await CostsIncurred.find({}, 'total costType')
     const totalProfitData = await ProductSold.find(productSoldCondition, 'productWarehouseId sellPrice quantity').populate('productWarehouseId').exec();
@@ -26,10 +29,12 @@ exports.findAll = async (req, res) => {
     const totalAmountImportedProductsSold = getTotalAmount(productSoldData, 'total');
     const shippingFees = costsIncurredData.filter(item => item.costType.toString() === shippingId);
     const otherFees = costsIncurredData.filter(item => (item.costType.toString() === setupStoreId || item.costType.toString() === initCostId));
+    const importProduct = costsIncurredData.filter(item => item?.costType.toString() === importProductByMoneyId);
     const totalShippingFees = getTotalAmount(shippingFees, 'total');
     const totalOtherFees = getTotalAmount(otherFees, 'total');
-    const totalProductAfterThat = getTotalAmount(productInWarehouseAfterThatData, 'total');
-    const currentMoney = (totalAmountImportedProductsSold - totalProductAfterThat)
+    // const totalProductAfterThat = getTotalAmount(productInWarehouseAfterThatData, 'total');
+    const totalImportProduct = getTotalAmount(importProduct, 'total');
+    const currentMoney = (totalAmountImportedProductsSold - totalImportProduct - totalShippingFees);
     const totalProfit = getTotalProfit(totalProfitData);
     const response = formatResponse({totalAmountImportedProducts, totalAmountImportedProductsSold, totalShippingFees, totalOtherFees, totalProfit, currentMoney});
     res.status(200).send(response)
